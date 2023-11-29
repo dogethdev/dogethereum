@@ -24,7 +24,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
-	"github.com/ethereum/go-ethereum/consensus/misc"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state"
@@ -145,13 +144,6 @@ func (pre *Prestate) Apply(vmConfig vm.Config, chainConfig *params.ChainConfig,
 	if pre.Env.Random != nil {
 		rnd := common.BigToHash(pre.Env.Random)
 		vmContext.Random = &rnd
-	}
-	// If DAO is supported/enabled, we need to handle it here. In geth 'proper', it's
-	// done in StateProcessor.Process(block, ...), right before transactions are applied.
-	if chainConfig.DAOForkSupport &&
-		chainConfig.DAOForkBlock != nil &&
-		chainConfig.DAOForkBlock.Cmp(new(big.Int).SetUint64(pre.Env.Number)) == 0 {
-		misc.ApplyDAOHardFork(statedb)
 	}
 
 	for i, tx := range txs {
