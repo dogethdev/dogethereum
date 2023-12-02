@@ -335,23 +335,38 @@ var (
 // the difficulty is calculated with Byzantium rules, which differs from Homestead in
 // how uncles affect the calculation
 func latestCalculatorfunc(time uint64, parent *types.Header) *big.Int {
-
+	if parent.Difficulty.Cmp(params.MinimumDifficulty) < 0 {
+		return params.MinimumDifficulty
+	}
 	nowTime := new(big.Int).SetUint64(time)
 	lastBlockTime := new(big.Int).SetUint64(parent.Time)
 
-	pastTime := big.NewInt(0)
+	if lastBlockTime.Cmp(big0) == 0 {
+		lastBlockTime.Sub(nowTime, big1)
+	}
+
 	diff := big.NewInt(0)
-	pastTime.Sub(nowTime, lastBlockTime)
+	pastTime := big.NewInt(0).Sub(nowTime, lastBlockTime)
+
+	if pastTime.Cmp(big0) == 0 {
+		pastTime = big.NewInt(1)
+	}
 
 	if pastTime.Cmp(params.DurationLimit) < 0 { //block create too fast
 		//div = params.DifficultyBoundDivisor / blockCreateTime-passdTime
 		DifficultyBoundDivisor := big.NewInt(0).Div(params.DifficultyBoundDivisor, big.NewInt(0).Sub(params.DurationLimit, pastTime)) //=2048/(13-pastTime)
 		addDiff := big.NewInt(0).Div(parent.Difficulty, DifficultyBoundDivisor)                                                       //last BlockDiff / div
 		diff.Add(parent.Difficulty, addDiff)
-	} else { //block create too slow
+	}
+
+	if pastTime.Cmp(params.DurationLimit) == 0 { //block create rate is ok
+		return diff.Sub(parent.Difficulty, big0)
+	}
+
+	if pastTime.Cmp(params.DurationLimit) > 0 { //block create too slow
 		//div = params.DifficultyBoundDivisor / passdTime
 		DifficultyBoundDivisor := big.NewInt(0).Div(params.DifficultyBoundDivisor, pastTime) // = 2048 / passdTime
-
+		//fmt.Println(params.DifficultyBoundDivisor, pastTime)
 		subDiff := big.NewInt(0).Div(parent.Difficulty, DifficultyBoundDivisor) //last BlockDiff / div
 		diff.Sub(parent.Difficulty, subDiff)
 	}
