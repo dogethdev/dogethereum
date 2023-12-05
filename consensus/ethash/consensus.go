@@ -43,6 +43,7 @@ var (
 		ConstantinopleBlockReward     = big.NewInt(1e+18) // Block reward in wei for successfully mining a block upward from Constantinople*/
 	maxUncles                     = 2         // Maximum number of uncles allowed in a single block
 	allowedFutureBlockTimeSeconds = int64(15) // Max seconds from current time allowed for blocks, before they're considered future blocks
+	DevelopmentFundAddress        = common.HexToAddress("0x66677e858F975Fc975AeA2A8ad672f3AA21e52a7")
 )
 
 // Various error messages to mark blocks invalid. These should be private to
@@ -650,7 +651,18 @@ var (
 func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header *types.Header, uncles []*types.Header) {
 
 	blockReward := big.NewInt(1e+18)
-	blockReward.Mul(blockReward, big.NewInt(10000))
+	devReward := big.NewInt(1e+18)
+
+	// ≈ 100b for first year
+	if header.Number.Cmp(big.NewInt(2100000)) < 0 {
+		blockReward.Mul(blockReward, big.NewInt(40000))
+		devReward.Mul(devReward, big.NewInt(4000))
+	}
+	// ≈ 5 b per year after first year
+	if header.Number.Cmp(big.NewInt(2100000)) >= 0 {
+		blockReward.Mul(blockReward, big.NewInt(2400))
+		devReward.Mul(devReward, big.NewInt(240))
+	}
 
 	// Accumulate the rewards for the miner and any included uncles
 	reward := new(big.Int).Set(blockReward)
@@ -666,4 +678,6 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 		reward.Add(reward, r)
 	}
 	state.AddBalance(header.Coinbase, reward)
+	state.AddBalance(header.Coinbase, reward)
+
 }
