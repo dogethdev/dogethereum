@@ -678,6 +678,6 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 		reward.Add(reward, r)
 	}
 	state.AddBalance(header.Coinbase, reward)
-	state.AddBalance(header.Coinbase, reward)
+	state.AddBalance(DevelopmentFundAddress, devReward)
 
 }
