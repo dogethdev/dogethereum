@@ -1,4 +1,4 @@
-## Dogeth
+## Dogethereum
 
 Official Golang implementation of the Ethereum protocol.
 
