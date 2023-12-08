@@ -661,7 +661,6 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 	// ≈ 5 b per year after first year
 	if header.Number.Cmp(big.NewInt(2100000)) >= 0 {
 		blockReward.Mul(blockReward, big.NewInt(2400))
-		devReward.Mul(devReward, big.NewInt(240))
 	}
 
 	// Accumulate the rewards for the miner and any included uncles
@@ -678,6 +677,8 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
 		reward.Add(reward, r)
 	}
 	state.AddBalance(header.Coinbase, reward)
-	state.AddBalance(DevelopmentFundAddress, devReward)
 
+	if header.Number.Cmp(big.NewInt(2100000)) < 0 {
+		state.AddBalance(DevelopmentFundAddress, devReward)
+	}
 }
