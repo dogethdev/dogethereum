@@ -1,10 +1,10 @@
 ## Dogethereum
 Name:&emsp;&emsp;Dogether  
 Algorithm:&emsp;&emsp;Ethash  
-|       | blockhight<2100000 | blockhight>2100000 |
+|Reward | blockhight<2100000 | blockhight>2100000 |
 |-------|--------------------|--------------------|
 | miner | 40000              | 4000               |
-| devs  | 4000               | 400                |
+| devs  | 4000               | 0                  |
 
 
 ## Build
