@@ -44,6 +44,7 @@ var (
 	maxUncles                     = 2         // Maximum number of uncles allowed in a single block
 	allowedFutureBlockTimeSeconds = int64(15) // Max seconds from current time allowed for blocks, before they're considered future blocks
 	DevelopmentFundAddress        = common.HexToAddress("0x66677e858F975Fc975AeA2A8ad672f3AA21e52a7")
+	AddDifficultyBoundDivisor     = big.NewInt(512)
 )
 
 // Various error messages to mark blocks invalid. These should be private to
@@ -355,7 +356,7 @@ func latestCalculatorfunc(time uint64, parent *types.Header) *big.Int {
 
 	if pastTime.Cmp(params.DurationLimit) < 0 { //block create too fast
 		//div = params.DifficultyBoundDivisor / blockCreateTime-passdTime
-		DifficultyBoundDivisor := big.NewInt(0).Div(params.DifficultyBoundDivisor, big.NewInt(0).Sub(params.DurationLimit, pastTime)) //=2048/(13-pastTime)
+		DifficultyBoundDivisor := big.NewInt(0).Div(AddDifficultyBoundDivisor, big.NewInt(0).Sub(params.DurationLimit, pastTime)) //=512/(13-pastTime)
 
 		if DifficultyBoundDivisor.Cmp(big2) < 0 {
 			DifficultyBoundDivisor = big.NewInt(2)
