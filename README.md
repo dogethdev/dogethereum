@@ -17,19 +17,8 @@ $ go build -v ./cmd/geth
 ```
 
 ## Start Dogether node
-### Linux
-```shell
-$ geth --http --http.addr 0.0.0.0 --datadir "./nodedata" --ethash.dagdir "./nodedata"
-```
-Save above code to run.sh
-#### run
-```shell
-$ ./run.sh
-```
 
-### Windwos
 ```shell
-geth --http --http.addr 0.0.0.0 --datadir "./nodedata" --ethash.dagdir "./nodedata"
-pause
+$ geth --syncmode full --datadir "./nodedata" --ethash.dagdir "./nodedata" --ethstats "your_node_name:dogether@state.dogether.dog"
+
 ```
-Save above code to run.bat and click it
