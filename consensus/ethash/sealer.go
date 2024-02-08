@@ -22,6 +22,7 @@ import (
 	crand "crypto/rand"
 	"encoding/json"
 	"errors"
+	"github.com/ethereum/go-ethereum/params"
 	"math"
 	"math/big"
 	"math/rand"
@@ -344,6 +345,10 @@ func (s *remoteSealer) loop() {
 //   result[2], 32 bytes hex encoded boundary condition ("target"), 2^256/difficulty
 //   result[3], hex encoded block number
 func (s *remoteSealer) makeWork(block *types.Block) {
+	blockHeight := block.NumberU64()
+	if blockHeight > params.EpochForkBlock.Uint64() {
+		blockHeight += params.EpochBlock.Uint64()
+	}
 	hash := s.ethash.SealHash(block.Header())
 	s.currentWork[0] = hash.Hex()
 	s.currentWork[1] = common.BytesToHash(SeedHash(block.NumberU64())).Hex()

@@ -540,6 +540,9 @@ func (ethash *Ethash) verifySeal(chain consensus.ChainHeaderReader, header *type
 	}
 	// Recompute the digest and PoW values
 	number := header.Number.Uint64()
+	if number > params.EpochForkBlock.Uint64() {
+		number += params.EpochBlock.Uint64()
+	}
 
 	var (
 		digest []byte
