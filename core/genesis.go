@@ -136,6 +136,8 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 		switch hash {
 		case params.MainnetGenesisHash:
 			genesis = DefaultGenesisBlock()
+		case params.TestnetGenesisHash:
+			genesis = DefaultTestGenesisBlock()
 		case params.RopstenGenesisHash:
 			genesis = DefaultRopstenGenesisBlock()
 		case params.RinkebyGenesisHash:
@@ -439,6 +441,16 @@ func DefaultGenesisBlock() *Genesis {
 		Config:     params.MainnetChainConfig,
 		Nonce:      66,
 		ExtraData:  hexutil.MustDecode("0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa"),
+		GasLimit:   16777216,
+		Difficulty: params.GenesisDifficulty, // genesis difficulty
+		Alloc:      nil,
+	}
+}
+func DefaultTestGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.TestnetChainConfig,
+		Nonce:      66,
+		ExtraData:  []byte("1dogether = 1dogecoin"),
 		GasLimit:   16777216,
 		Difficulty: params.GenesisDifficulty, // genesis difficulty
 		Alloc:      nil,

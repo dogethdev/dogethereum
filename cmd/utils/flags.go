@@ -143,7 +143,11 @@ var (
 	}
 	MainnetFlag = cli.BoolFlag{
 		Name:  "mainnet",
-		Usage: "Ethereum mainnet",
+		Usage: "dogether mainnet",
+	}
+	TestnetFlag = cli.BoolFlag{
+		Name:  "testnet",
+		Usage: "dogether testnet",
 	}
 	GoerliFlag = cli.BoolFlag{
 		Name:  "goerli",
@@ -1684,6 +1688,12 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		}
 		cfg.Genesis = core.DefaultGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.MainnetGenesisHash)
+	case ctx.GlobalBool(TestnetFlag.Name):
+		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 1001248
+		}
+		cfg.Genesis = core.DefaultTestGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.TestnetGenesisHash)
 	case ctx.GlobalBool(RopstenFlag.Name):
 		if !ctx.GlobalIsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 3
@@ -1943,6 +1953,8 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 	var genesis *core.Genesis
 	switch {
 	case ctx.GlobalBool(MainnetFlag.Name):
+		genesis = core.DefaultGenesisBlock()
+	case ctx.GlobalBool(TestnetFlag.Name):
 		genesis = core.DefaultGenesisBlock()
 	case ctx.GlobalBool(RopstenFlag.Name):
 		genesis = core.DefaultRopstenGenesisBlock()

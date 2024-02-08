@@ -65,7 +65,7 @@ func TestDAOForkRangeExtradata(t *testing.T) {
 		t.Fatalf("con-fork: failed to import chain prefix: %v", err)
 	}
 	// Try to expand both pro-fork and non-fork chains iteratively with other camp's blocks
-	for i := int64(0); i < params.DAOForkExtraRange.Int64(); i++ {
+	for i := int64(0); i < 10; i++ {
 		// Create a pro-fork block, and try to feed into the no-fork chain
 		db = rawdb.NewMemoryDatabase()
 		gspec.MustCommit(db)
