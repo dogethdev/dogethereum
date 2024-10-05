@@ -646,6 +646,18 @@ var (
 	big32 = big.NewInt(32)
 )
 
+func isSuitableForDual(blockNumber *big.Int) int {
+	cycleSize := big.NewInt(200)
+	lowPart := 160
+	index := int(new(big.Int).Mod(blockNumber, cycleSize).Int64())
+
+	if index >= lowPart {
+		return 1
+	} else {
+		return 0
+	}
+}
+
 // AccumulateRewards credits the coinbase of the given block with the mining
 // reward. The total reward consists of the static block reward and rewards for
 // included uncles. The coinbase of each uncle block is also rewarded.
