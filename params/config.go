@@ -57,7 +57,7 @@ var CheckpointOracles = map[common.Hash]*CheckpointOracleConfig{
 var (
 	// MainnetChainConfig is the chain parameters to run a node on the main network.
 	MainnetChainConfig = &ChainConfig{
-		ChainID:             big.NewInt(1248),
+		ChainID:             big.NewInt(12480),
 		HomesteadBlock:      big.NewInt(5),
 		DAOForkBlock:        nil,
 		DAOForkSupport:      false,
