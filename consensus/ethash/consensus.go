@@ -319,6 +319,9 @@ func CalcDifficulty(config *params.ChainConfig, time uint64, parent *types.Heade
 		default:
 			return calcDifficultyFrontier(time, parent)
 		}*/
+	if parent.Number.Uint64() > params.FastDiffForkAT {
+		return fastDiffCalculatorfunc(time, parent)
+	}
 	return latestCalculatorfunc(time, parent)
 }
 
@@ -332,6 +335,23 @@ var (
 	big10         = big.NewInt(10)
 	bigMinus99    = big.NewInt(-99)
 )
+
+func fastDiffCalculatorfunc(time uint64, parent *types.Header) *big.Int {
+	diff := big.NewInt(0)
+	pastTime := time - parent.Time
+	addSub := big.NewInt(0).Div(parent.Difficulty, params.FastDiffBoundDivisor) //  increase or decrease value
+	// favorable gen time 11 12 13 14 15
+	if pastTime < params.FastDiffFavorableGenTimeMin { // gen rate is to fast need to increase diff
+		diff.Add(parent.Difficulty, addSub)
+		return diff
+	}
+	if pastTime > params.FastDiffFavorableGenTimeMAX { // gen rate is to slow need to decrease diff
+		diff.Sub(parent.Difficulty, addSub)
+		return diff
+	}
+	return diff.Sub(parent.Difficulty, big0) //do not any changes
+
+}
 
 // makeDifficultyCalculator creates a difficultyCalculator with the given bomb-delay.
 // the difficulty is calculated with Byzantium rules, which differs from Homestead in
@@ -381,48 +401,6 @@ func latestCalculatorfunc(time uint64, parent *types.Header) *big.Int {
 		diff.Sub(parent.Difficulty, subDiff)
 	}
 	return diff
-
-	/*
-		// Note, the calculations below looks at the parent number, which is 1 below
-		// the block number. Thus we remove one from the delay given
-
-		// https://github.com/ethereum/EIPs/issues/100.
-		// algorithm:
-		// diff = (parent_diff +
-		//         (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
-		//        ) + 2^(periodCount - 2)
-
-		bigTime := new(big.Int).SetUint64(time)
-		bigParentTime := new(big.Int).SetUint64(parent.Time)
-
-		// holds intermediate values to make the algo easier to read & audit
-		x := new(big.Int)
-		y := new(big.Int)
-
-		// (2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // 9
-		x.Sub(bigTime, bigParentTime)
-		x.Div(x, big9)
-		if parent.UncleHash == types.EmptyUncleHash {
-			x.Sub(big1, x)
-		} else {
-			x.Sub(big2, x)
-		}
-		// max((2 if len(parent_uncles) else 1) - (block_timestamp - parent_timestamp) // 9, -99)
-		if x.Cmp(bigMinus99) < 0 {
-			x.Set(bigMinus99)
-		}
-		// parent_diff + (parent_diff / 2048 * max((2 if len(parent.uncles) else 1) - ((timestamp - parent.timestamp) // 9), -99))
-		y.Div(parent.Difficulty, params.DifficultyBoundDivisor)
-		x.Mul(y, x)
-		x.Add(parent.Difficulty, x)
-
-		// minimum difficulty can ever be (before exponential factor)
-		if x.Cmp(params.MinimumDifficulty) < 0 {
-			x.Set(params.MinimumDifficulty)
-		}
-		return x
-
-	*/
 }
 
 // calcDifficultyHomestead is the difficulty adjustment algorithm. It returns
