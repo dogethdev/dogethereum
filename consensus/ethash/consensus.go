@@ -337,6 +337,10 @@ var (
 )
 
 func fastDiffCalculatorfunc(time uint64, parent *types.Header) *big.Int {
+	if parent.Difficulty.Cmp(params.MinimumDifficulty) < 0 { //lol impossible
+		return params.MinimumDifficulty
+	}
+
 	diff := big.NewInt(0)
 	pastTime := time - parent.Time
 	addSub := big.NewInt(0).Div(parent.Difficulty, params.FastDiffBoundDivisor) //  increase or decrease value
