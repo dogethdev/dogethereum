@@ -343,14 +343,15 @@ func fastDiffCalculatorfunc(time uint64, parent *types.Header) *big.Int {
 
 	diff := big.NewInt(0)
 	pastTime := time - parent.Time
-	addSub := big.NewInt(0).Div(parent.Difficulty, params.FastDiffBoundDivisor) //  increase or decrease value
-	// favorable gen time 11 12 13 14 15
-	if pastTime < params.FastDiffFavorableGenTimeMin { // gen rate is to fast need to increase diff
-		diff.Add(parent.Difficulty, addSub)
+	add := big.NewInt(0).Div(parent.Difficulty, params.FastDiffBoundAddDivisor) //  increase or decrease value
+	sub := big.NewInt(0).Div(parent.Difficulty, params.FastDiffBoundSubDivisor) //  increase or decrease value
+
+	if pastTime < params.FastDiffFavorableGenTimeFactorMin { // gen rate is to fast need to increase diff
+		diff.Add(parent.Difficulty, add)
 		return diff
 	}
-	if pastTime > params.FastDiffFavorableGenTimeMAX { // gen rate is to slow need to decrease diff
-		diff.Sub(parent.Difficulty, addSub)
+	if pastTime > params.FastDiffFavorableGenTimeFactorMAX { // gen rate is to slow need to decrease diff
+		diff.Sub(parent.Difficulty, sub)
 		return diff
 	}
 	return diff.Sub(parent.Difficulty, big0) //do not any changes

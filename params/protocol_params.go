@@ -169,8 +169,9 @@ var (
 	DurationLimit          = big.NewInt(13)      // The decision boundary on the blocktime duration used to determine whether difficulty should go up or not.
 
 	//fastDiff fork
-	FastDiffForkAT              = uint64(50)
-	FastDiffBoundDivisor        = big.NewInt(10)
-	FastDiffFavorableGenTimeMin = uint64(11)
-	FastDiffFavorableGenTimeMAX = uint64(15)
+	FastDiffForkAT                    = uint64(10)
+	FastDiffBoundAddDivisor           = big.NewInt(12)
+	FastDiffBoundSubDivisor           = big.NewInt(10)
+	FastDiffFavorableGenTimeFactorMin = uint64(8)
+	FastDiffFavorableGenTimeFactorMAX = uint64(13)
 )
