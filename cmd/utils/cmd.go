@@ -22,6 +22,7 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/father"
 	"io"
 	"os"
 	"os/signal"
@@ -89,6 +90,7 @@ func StartNode(ctx *cli.Context, stack *node.Node, isConsole bool) {
 
 		shutdown := func() {
 			log.Info("Got interrupt, shutting down...")
+			father.DB.Close()
 			go stack.Close()
 			for i := 10; i > 0; i-- {
 				<-sigc
